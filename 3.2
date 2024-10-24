@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Узел очереди
+typedef struct Node {
+    int priority;
+    int numb;
+    struct Node* next;
+} Node;
+
+// Структура данных Очередь
+typedef struct Queue {
+    Node* front;
+} Queue;
+
+// Функция создания нового узла
+Node* newNode(int d, int p) {
+    Node* temp = (Node*)malloc(sizeof(Node));
+    temp->numb = d;
+    temp->priority = p;
+    temp->next = NULL;
+    return temp;
+}
+
+// Функция создания очереди
+Queue* createQueue() {
+    Queue* q = (Queue*)malloc(sizeof(Queue));
+    q->front = NULL;
+    return q;
+}
+
+// Функция, которая вставляет узел по приоритету
+void insert(Queue* q, int d, int p) {
+    Node* start = q->front;
+    Node* temp = newNode(d, p);
+
+    // Особый случай для головы
+    if (q->front == NULL || q->front->priority < p) {
+        temp->next = q->front;
+        q->front = temp;
+    } else {
+        // Найти положение нового узла
+        while (start->next != NULL && start->next->priority >= p) {
+            start = start->next;
+        }
+        temp->next = start->next;
+        start->next = temp;
+    }
+}
+
+// Удаление узла с наивысшим приоритетом
+void pop(Queue* q) {
+    if (q->front == NULL) {
+        printf("Очередь пуста\n");
+        return;
+    }
+    Node* temp = q->front;
+    q->front = q->front->next;
+    free(temp);
+}
+
+// Печать очереди
+void printQueue(Queue* q) {
+    Node* head = q->front;
+    while (head != NULL) {
+        printf("Число: %d Приоритет: %d\n", head->numb, head->priority);
+        head = head->next;
+    }
+}
+
+int main() {
+    Queue* q = createQueue();
+
+    insert(q, 4, 1);
+    insert(q, 5, 2);
+    insert(q, 6, 3);
+    insert(q, 7, 0);
+
+    printf("Приоритетная очередь:\n");
+    printQueue(q);
+
+    pop(q);
+
+    printf("\nПосле удаления одного элемента:\n");
+    printQueue(q);
+
+    return 0;
+}
