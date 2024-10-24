@@ -1,201 +1,76 @@
-#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-struct node
-{
-    char inf[256]; // полезная информация
-    int pr;
-    struct node *next; // ссылка на следующий элемент
-};
-struct node *get_struct(void)
-{
-    struct node *p = NULL;
-    char s[256];
-    if ((p = (node*)malloc(sizeof(struct node))) == NULL) // выделяем память под новый элемент списка
-{
-    printf("Ошибка при распределении памяти\n");
-    exit(1);
+
+// Узел очереди
+typedef struct Node {
+    int priority;
+    int numb;
+    struct Node* next;
+} Node;
+
+// Функция создания нового узла
+Node* newNode(int d, int p) {
+    Node* temp = (Node*)malloc(sizeof(Node));
+    temp->numb = d;
+    temp->priority = p;
+    temp->next = NULL;
+    return temp;
 }
 
-ptintf ("Введите название объекта: \n"); // вводим данные
-scanf("%s", s);
-if (*s == 0)
-{
-    printf("Запись не была произведена\n");
-    return NULL;
-}
-    strcpy(p->inf, s);
-    
-    printf("Введите приоритет:")
-    p->next = NULL;
-    return p; // возвращаем указатель на созданный элемент
-}
-/* Последовательное добавление в список элемента (в конец)*/
-void spstore(void)
-{
-    struct node *p = NULL;
-    p = get_struct();
-    if (head == NULL && p != NULL) // если списка нет, то устанавливаем голову списка
-    {
-        head = p;
-        last = p;
-        
-    }
-    else if (head != NULL && p != NULL) // список уже есть, то вставляем в конец
-    {
-        temp = head;
-        while(temp next
-        last->next = p;
-        last = p;
-        
-    }
-    return;
-    
-}
+// Функция, которая вставляет узел по приоритету
+void insert(Node** head, int d, int p) {
+    Node* start = *head;
+    Node* temp = newNode(d, p);
 
-void review(struct node)
-{
-    struct node *temp=NULL
-    if(first==NULL)
-    {
-        printf("Список пуст");
-        
+    // Особый случай для головы
+    if (*head == NULL || (*head)->priority < p) {
+        temp->next = *head;
+        *head = temp;
     }
-    else{
-        while(first>next!=NULL)
-        {
-            printf("%s",temp>inf);
-            temp = temp>next;
-            
-        }
-        
-    }
-    
-}
-
-struct node {
-    char inf[256]; // полезная информация
-    struct node *next; // ссылка на следующий элемент
-    };
-
-struct node *get_struct(void) {
-    struct node *p = NULL;
-    char s[256];
-    // Выделяем память под новый элемент списка
-    if ((p = (struct node*)malloc(sizeof(struct node))) == NULL) {
-        printf("Ошибка при распределении памяти\n");
-        exit(1);
-        
-    }
-    printf("Введите название объекта: \n"); // вводим данные
-    scanf("%s", s);
-    // Проверяем, была ли введена информация
-    if (*s == 0) {
-        printf("Запись не была произведена\n");
-        free(p); // Освобождаем память, если ввод пустой
-        return NULL;
-        
-    }
-    // Копируем введенные данные в структуру
-    strcpy(p->inf, s);
-    p->next = NULL;
-    return p; // возвращаем указатель на созданный элемент
-    }
-    // Глобальные переменные для списка
-    struct node *head = NULL; // Указатель на начало списка
-    struct node *last = NULL; // Указатель на конец списка
-    /* Последовательное добавление в список элемента (в конец)*/
-    void spstore(void) {
-        struct node *p = NULL;
-        p = get_struct();
-        // Если список пустой, устанавливаем голову и конец списка
-        if (head == NULL && p != NULL) {
-            head = p;
-            last = p;
-            
-        }
-        // Если список не пустой, добавляем элемент в конец
-        else if (head != NULL && p != NULL) {
-            last->next = p;
-            last = p;
-            
-        }
-        return;
-        
-    };
-
-// Функция для вывода элементов списка
-void review(void) {
-    struct node *temp = head; // Указатель для обхода списка
-    if (head == NULL) {
-        printf("Список пуст\n");
-    } 
     else {
-        while (temp != NULL) {
-            printf("%s\n", temp->inf); // Выводим информацию элемента
-            temp = temp->next; // Переходим к следующему элементу
-            }
-        
+        // Найти положение нового узла
+        while (start->next != NULL && start->next->priority >= p) {
+            start = start->next;
+        }
+        temp->next = start->next;
+        start->next = temp;
     }
-/* Удаление элемента по содержимому. */
-void del(char *name)
-{
-	struct node *struc = head; // указатель, проходящий по списку установлен на начало списка
-	struct node *prev;// указатель на предшествующий удаляемому элемент
-	int flag = 0;      // индикатор отсутствия удаляемого элемента в списке
-
-	if (head == NULL) // если голова списка равна NULL, то список пуст
-	{
-		printf("Список пуст\n");
-		return;
-	}
-
-	if (strcmp(name, struc->inf) == 0) // если удаляемый элемент - первый
-	{
-		flag = 1;
-		head = struc->next; // установливаем голову на следующий элемент
-		free(struc);  // удаляем первый элемент
-		struc = head; // устанавливаем указатель для продолжения поиска
-	}
-	else
-	{
-		prev = struc;
-		struc = struc->next;
-	}
-
-	while (struc) // проход по списку и поиск удаляемого элемента
-	{
-		if (strcmp(name, struc->inf) == 0) // если нашли, то
-		{
-			flag = 1;         // выставляем индикатор
-			if (struc->next)  // если найденный элемент не последний в списке
-			{
-				prev->next = struc->next; // меняем указатели
-				free(struc);		    // удаляем  элемент
-				struc = prev->next; // устанавливаем указатель для продолжения поиска
-			}
-			else			// если найденный элемент последний в списке
-			{
-				prev->next = NULL; // обнуляем указатель предшествующего элемента
-				free(struc);	// удаляем  элемент
-				return;
-			}
-		}
-		else	/ если не нашли, то
-		{
-			prev = struc; // устанавливаем указатели для продолжения поиска
-			struc = struc->next;
-		}
-	}
-
-	if (flag == 0)				// если флаг = 0, значит нужный элемент не найден
-	{
-		printf("Элемент не найден\n");
-		return;
-	}
-
-
 }
 
+// Удаление узла с наивысшим приоритетом
+void pop(Node** head) {
+    if (*head == NULL) {
+        printf("Очередь пуста\n");
+        return;
+    }
+    Node* temp = *head;
+    *head = (*head)->next;
+    free(temp);
+}
+
+// Печать очереди
+void printQueue(Node* head) {
+    while (head != NULL) {
+        printf("Число: %d Приортет: %d\n", head->numb, head->priority);
+        head = head->next;
+    }
+}
+
+int main() {
+    Node* pq = NULL;
+
+    insert(&pq, 4, 1);
+    insert(&pq, 5, 2);
+    insert(&pq, 6, 3);
+    insert(&pq, 7, 0);
+
+    printf("Приоритетная очередь:\n");
+    printQueue(pq);
+
+    pop(&pq);
+
+    printf("\nПосле удаления одного элемента:\n");
+    printQueue(pq);
+
+    return 0;
 }
