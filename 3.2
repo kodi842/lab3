@@ -10,6 +10,7 @@ typedef struct Node {
 // Определение структуры стека
 typedef struct Stack {
     Node* top;
+    Node* bottom;
 } Stack;
 
 // Функция для создания нового узла
@@ -24,24 +25,40 @@ Node* newNode(int data) {
 Stack* createStack() {
     Stack* stack = (Stack*)malloc(sizeof(Stack));
     stack->top = NULL;
+    stack->bottom = NULL;
     return stack;
 }
 
 // Функция для добавления элемента в стек
 void push(Stack* stack, int data) {
     Node* temp = newNode(data);
-    temp->next = stack->top;
-    stack->top = temp;
+    if (stack->top == NULL) {
+        stack->top = temp;
+        stack->bottom = temp;
+    } else {
+        temp->next = stack->top;
+        stack->top = temp;
+    }
 }
 
-// Функция для удаления элемента из стека
-int pop(Stack* stack) {
+// Функция для удаления последнего элемента из стека
+int popLast(Stack* stack) {
     if (stack->top == NULL) {
         printf("Стек пуст\n");
         return -1;
     }
-    Node* temp = stack->top;
-    stack->top = stack->top->next;
+    Node* temp = stack->bottom;
+    if (stack->top == stack->bottom) {
+        stack->top = NULL;
+        stack->bottom = NULL;
+    } else {
+        Node* current = stack->top;
+        while (current->next != stack->bottom) {
+            current = current->next;
+        }
+        current->next = NULL;
+        stack->bottom = current;
+    }
     int popped = temp->data;
     free(temp);
     return popped;
@@ -65,7 +82,7 @@ int main() {
     push(stack, 40);
     printf("Содержимое стека: ");
     printStack(stack);
-    printf("Удалённый элемент: %d\n", pop(stack));
+    printf("Удалённый элемент: %d\n", popLast(stack));
     printf("Содержимое стека после удаления: ");
     printStack(stack);
     return 0;
