@@ -1,88 +1,78 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Узел стека
+// Определение структуры узла очереди
 typedef struct Node {
-    int priority;
-    int numb;
+    int data;
     struct Node* next;
 } Node;
 
-// Структура данных Стек
-typedef struct Stack {
-    Node* top;
-} Stack;
+// Определение структуры очереди
+typedef struct Queue {
+    Node* front;
+    Node* rear;
+} Queue;
 
-// Функция создания нового узла
-Node* newNode(int d, int p) {
+// Функция для создания нового узла
+Node* newNode(int data) {
     Node* temp = (Node*)malloc(sizeof(Node));
-    temp->numb = d;
-    temp->priority = p;
+    temp->data = data;
     temp->next = NULL;
     return temp;
 }
 
-// Функция создания стека
-Stack* createStack() {
-    Stack* stack = (Stack*)malloc(sizeof(Stack));
-    stack->top = NULL;
-    return stack;
+// Функция для создания очереди
+Queue* createQueue() {
+    Queue* q = (Queue*)malloc(sizeof(Queue));
+    q->front = q->rear = NULL;
+    return q;
 }
 
-// Функция, которая вставляет узел по приоритету
-void push(Stack* stack, int d, int p) {
-    Node* temp = newNode(d, p);
-
-    // Особый случай для вершины
-    if (stack->top == NULL || stack->top->priority < p) {
-        temp->next = stack->top;
-        stack->top = temp;
-    } else {
-        Node* start = stack->top;
-        // Найти положение нового узла
-        while (start->next != NULL && start->next->priority >= p) {
-            start = start->next;
-        }
-        temp->next = start->next;
-        start->next = temp;
-    }
-}
-
-// Удаление узла с наивысшим приоритетом
-void pop(Stack* stack) {
-    if (stack->top == NULL) {
-        printf("Стек пуст\n");
+// Функция для добавления элемента в очередь
+void enqueue(Queue* q, int data) {
+    Node* temp = newNode(data);
+    if (q->rear == NULL) {
+        q->front = q->rear = temp;
         return;
     }
-    Node* temp = stack->top;
-    stack->top = stack->top->next;
+    q->rear->next = temp;
+    q->rear = temp;
+}
+
+// Функция для удаления элемента из очереди
+void dequeue(Queue* q) {
+    if (q->front == NULL) {
+        printf("Очередь пуста\n");
+        return;
+    }
+    Node* temp = q->front;
+    q->front = q->front->next;
+    if (q->front == NULL) {
+        q->rear = NULL;
+    }
     free(temp);
 }
 
-// Печать стека
-void printStack(Stack* stack) {
-    Node* head = stack->top;
-    while (head != NULL) {
-        printf("Число: %d Приоритет: %d\n", head->numb, head->priority);
-        head = head->next;
+// Функция для печати содержимого очереди
+void printQueue(Queue* q) {
+    Node* temp = q->front;
+    while (temp) {
+        printf("%d ", temp->data);
+        temp = temp->next;
     }
+    printf("\n");
 }
 
 int main() {
-    Stack* stack = createStack();
-
-    push(stack, 4, 1);
-    push(stack, 5, 2);
-    push(stack, 6, 3);
-    push(stack, 7, 0);
-
-    printf("Стек с приоритетами:\n");
-    printStack(stack);
-
-    pop(stack);
-
-    printf("\nПосле удаления одного элемента:\n");
-    printStack(stack);
-
+    Queue* q = createQueue();
+    enqueue(q, 10);
+    enqueue(q, 20);
+    enqueue(q, 30);
+    enqueue(q, 40);
+    printf("Содержимое очереди: ");
+    printQueue(q);
+    dequeue(q);
+    printf("Содержимое очереди после удаления: ");
+    printQueue(q);
     return 0;
 }
